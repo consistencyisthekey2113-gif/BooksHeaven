@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BOOKSHEAVEN</title>
+
+<style>
+:root{
+  --bg:#f5f6fa;
+  --card:#fff;
+  --text:#111;
+}
+.dark{
+  --bg:#121212;
+  --card:#1e1e1e;
+  --text:#eee;
+}
+body{
+  margin:0;
+  font-family:Arial;
+  background:var(--bg);
+  color:var(--text);
+}
+
+/* Navbar */
+.navbar{
+  display:flex;
+  justify-content:space-between;
+  padding:15px 25px;
+  background:#111;
+  color:#fff;
+}
+input{
+  padding:8px;
+  border:none;
+  border-radius:5px;
+}
+
+/* Grid */
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+  gap:20px;
+  padding:20px;
+}
+
+.card{
+  background:var(--card);
+  border-radius:10px;
+  overflow:hidden;
+  cursor:pointer;
+  transition:0.3s;
+}
+.card:hover{ transform:translateY(-5px); }
+
+.card img{
+  width:100%;
+  height:250px;
+  object-fit:cover;
+}
+
+.card h3{ font-size:14px; padding:5px; }
+.card p{ padding:0 5px; }
+
+/* Price */
+.price{
+  color:green;
+  font-weight:bold;
+  padding:0 5px 10px;
+}
+
+/* Modal */
+.modal{
+  display:none;
+  position:fixed;
+  top:0; left:0;
+  width:100%; height:100%;
+  background:rgba(0,0,0,0.8);
+  justify-content:center;
+  align-items:center;
+}
+
+.modal-content{
+  background:var(--card);
+  padding:20px;
+  border-radius:10px;
+  max-width:400px;
+}
+
+/* Button */
+button{
+  padding:10px;
+  border:none;
+  background:#007bff;
+  color:#fff;
+  border-radius:5px;
+  cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+
+<div class="navbar">
+  <h2>BOOKSHEAVEN</h2>
+  <input id="search" placeholder="Search books..." onkeyup="searchBooks()">
+  <button onclick="toggleDark()">🌙</button>
+</div>
+
+<div class="grid" id="grid"></div>
+
+<div class="modal" id="modal" onclick="closeModal()">
+  <div class="modal-content" id="modalContent"></div>
+</div>
+
+<script>
+const baseBooks = [
+["Harry Potter and the Sorcerer's Stone","J.K. Rowling"],
+["Harry Potter and the Chamber of Secrets","J.K. Rowling"],
+["The Alchemist","Paulo Coelho"],
+["Atomic Habits","James Clear"],
+["Rich Dad Poor Dad","Robert Kiyosaki"],
+["Think and Grow Rich","Napoleon Hill"],
+["The 5 AM Club","Robin Sharma"],
+["The Da Vinci Code","Dan Brown"],
+["Angels and Demons","Dan Brown"],
+["It Ends With Us","Colleen Hoover"],
+["Verity","Colleen Hoover"],
+["Wings of Fire","A.P.J Abdul Kalam"],
+["Ikigai","Hector Garcia"],
+["Deep Work","Cal Newport"],
+["Start With Why","Simon Sinek"]
+];
+
+const books=[];
+
+// generate 500+ books cleanly
+for(let i=0;i<40;i++){
+  baseBooks.forEach(b=>{
+    books.push({
+      title:b[0],
+      author:b[1],
+      pages:150+Math.floor(Math.random()*400),
+      price:199+Math.floor(Math.random()*800),
+      img:"https://covers.openlibrary.org/b/title/"+encodeURIComponent(b[0])+"-L.jpg",
+      link:"https://www.amazon.in/s?k="+encodeURIComponent(b[0])
+    });
+  });
+}
+
+function render(list){
+  let html="";
+  list.forEach(b=>{
+    html+=`
+    <div class="card" onclick="openBook('${b.title}','${b.author}','${b.img}','${b.pages}','${b.price}','${b.link}')">
+      <img src="${b.img}" onerror="this.src='https://via.placeholder.com/200x300'">
+      <h3>${b.title}</h3>
+      <p>${b.author}</p>
+      <div class="price">₹${b.price}</div>
+    </div>`;
+  });
+  document.getElementById("grid").innerHTML=html;
+}
+
+function searchBooks(){
+  let val=document.getElementById("search").value.toLowerCase();
+  let filtered=books.filter(b=>b.title.toLowerCase().includes(val)||b.author.toLowerCase().includes(val));
+  render(filtered);
+}
+
+function openBook(title,author,img,pages,price,link){
+  document.getElementById("modal").style.display="flex";
+  document.getElementById("modalContent").innerHTML=`
+    <img src="${img}" width="100%">
+    <h2>${title}</h2>
+    <p><b>${author}</b></p>
+    <p>Pages: ${pages}</p>
+    <p style="color:green;font-size:18px;">Price: ₹${price}</p>
+    <button onclick="window.open('${link}')">Buy on Amazon</button>
+  `;
+}
+
+function closeModal(){
+  document.getElementById("modal").style.display="none";
+}
+
+function toggleDark(){
+  document.body.classList.toggle("dark");
+}
+
+render(books);
+</script>
+
+</body>
+</html>
